@@ -1,4 +1,5 @@
 from client import Client
+import json
 
 class LoggerClient(Client):
     def on_message(self, client, userdata, msg):
@@ -6,8 +7,11 @@ class LoggerClient(Client):
         print("Received:" + str(msg.payload.decode("utf-8")))
 
 if __name__ == "__main__":
-
-    client = LoggerClient('localhost', 1883)
+    f = open('../properties.json')
+    properties = json.load(f)
+    BROKER_ADDR = properties['BROKER_ADDR']
+    BROKER_PORT = properties['BROKER_PORT']
+    client = LoggerClient(BROKER_ADDR, BROKER_PORT)
     # client.on_message = on_message
     client.connect()
 

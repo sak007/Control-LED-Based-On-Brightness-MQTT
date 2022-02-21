@@ -1,4 +1,5 @@
 from client import Client
+import json
 
 class PiCClient(Client):
     def on_message(self, client, userdata, msg):
@@ -12,19 +13,23 @@ class PiCClient(Client):
             print("Topic:" + str(msg.topic))
             print("Received:" + str(msg.payload))
 
-def updateLightStatus():
-    if lightSensor >= threshold:
-        if oldLightStatus != 'TurnOn':
+def updateLightStatus(client):
+    if client.lightSensor >= client.threshold:
+        if client.oldLightStatus != 'TurnOn':
             client.publish("lightStatus", payload='TurnOn')
     else:
-        if oldLightStatus != 'TurnOff':
+        if client.oldLightStatus != 'TurnOff':
             client.publish("lightStatus", payload='TurnOff')
-    lightSensor = None
-    threshold = None
+    client.lightSensor = None
+    client.threshold = None
 
 if __name__ == "__main__":
 
-    client = PiCClient('localhost', 1883)
+    f = open('../properties.json')
+    properties = json.load(f)
+    BROKER_ADDR = properties['BROKER_ADDR']
+    BROKER_PORT = properties['BROKER_PORT']
+    client = PiCClient(BROKER_ADDR, BROKER_PORT)
     # client.on_message = on_message
     client.setStatusWill("status/RaspberryPiC")
     client.connect()
@@ -33,16 +38,12 @@ if __name__ == "__main__":
     client.subscribe("threshold")
     client.subscribe("lightStatus")
 
-    global lightSensor
-    lightSensor = None
-    global threshold
-    threshold = None
-    global lightStatus
-    lightStatus = None
-    global oldLightStatus
-    oldLightStatus = None
+    client.lightSensor = None
+    client.threshold = None
+    client.lightStatus = None
+    client.oldLightStatus = None
 
 
     while True:
-        if lightSensor != None and threshold != None:
-            updateLightStatus()
+        if client.lightSensor != None and client.threshold != None:
+            updateLightStatus(client)

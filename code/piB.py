@@ -1,15 +1,16 @@
 from client import Client
 import time
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
+import json
 
-# LIGHT_STATUS_PIN = 11
-# PI_A_PIN = 13
-# PI_B_PIN = 15
+LIGHT_STATUS_PIN = 11
+PI_A_PIN = 13
+PI_C_PIN = 15
 
-# GPIO.setmode(GPIO.BOARD)
-# GPIO.setup(LIGHT_STATUS_PIN, GPIO.OUT)
-# GPIO.setup(13, GPIO.OUT)
-# GPIO.setup(15, GPIO.OUT)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(LIGHT_STATUS_PIN, GPIO.OUT)
+GPIO.setup(PI_A_PIN, GPIO.OUT)
+GPIO.setup(PI_C_PIN, GPIO.OUT)
 
 
 
@@ -20,35 +21,34 @@ class PiBClient(Client):
         payload = str(msg.payload.decode("utf-8"))
         if topic == 'lightStatus':
             if payload == 'TurnOn':
-                self.lightStatus = 1
+                self.lightStatus = True
             else:
-                self.lightStatus = 0
+                self.lightStatus = False
         elif topic == 'status/RaspberryPiA':
             if payload == 'online':
-                self.piA = 1
+                self.piA = True
             else:
-                # print(payload)
-                # time.sleep(5)
-                self.piA = 0
+                self.piA = False
         elif topic == 'status/RaspberryPiC':
             if payload == 'online':
-                self.piB = 1
+                self.piC = True
             else:
-                self.piB = 0
+                self.piC = False
         else:
             print("Topic:" + topic)
             print("Received:" + payload)
 
-        # print(self.lightStatus, self.piA, self.piB)
-        # time.sleep(5)
 
 if __name__ == "__main__":
 
-    client = PiBClient('localhost', 1883)
-    # client.on_message = on_message
+    f = open('../properties.json')
+    properties = json.load(f)
+    BROKER_ADDR = properties['BROKER_ADDR']
+    BROKER_PORT = properties['BROKER_PORT']
+    client = PiBClient(BROKER_ADDR, BROKER_PORT)
     client.lightStatus = 0
     client.piA = 0
-    client.piB = 0
+    client.piC = 0
     client.connect()
 
 
@@ -57,10 +57,10 @@ if __name__ == "__main__":
     client.subscribe("status/RaspberryPiC")
 
     while True:
-        # try:
-            print(client.lightStatus, client.piA, client.piB)
-            # GPIO.output(LIGHT_STATUS_PIN, lightStatus)
-            # GPIO.output(PI_A_PIN, piA)
-            # GPIO.output(PI_B_PIN, piB)
-        # except KeyboardInterrupt:
-        #         # GPIO.cleanup()
+        try:
+            print(client.lightStatus, client.piA, client.piC)
+            GPIO.output(LIGHT_STATUS_PIN, client.lightStatus)
+            GPIO.output(PI_A_PIN, client.piA)
+            GPIO.output(PI_C_PIN, client.piC)
+        except KeyboardInterrupt:
+            GPIO.cleanup()

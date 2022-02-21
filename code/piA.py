@@ -1,4 +1,5 @@
 from client import Client
+import json
 
 class PiAClient(Client):
     def on_message(self, client, userdata, msg):
@@ -14,7 +15,11 @@ class PiAClient(Client):
 
 if __name__ == "__main__":
 
-    client = PiAClient('localhost', 1883)
+    f = open('../properties.json')
+    properties = json.load(f)
+    BROKER_ADDR = properties['BROKER_ADDR']
+    BROKER_PORT = properties['BROKER_PORT']
+    client = PiAClient(BROKER_ADDR, BROKER_PORT)
     # client.on_message = on_message
     client.setStatusWill("status/RaspberryPiA")
     client.connect()
