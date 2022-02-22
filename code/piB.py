@@ -20,24 +20,31 @@ class PiBClient(Client):
         topic = str(msg.topic)
         payload = str(msg.payload.decode("utf-8"))
         if topic == 'lightStatus':
+            # Store value of light status received from broker
+            # but don't assign it to the final light status
+            # output. It must first be arbitrated with the state
+            # of PiC
             if payload == 'TurnOn':
-                self.lightStatus = True
+                self.brokerLightStatus = True
             else:
-                self.lightStatus = False
+                self.brokerLightStatus = False
         elif topic == 'status/RaspberryPiA':
             if payload == 'online':
                 self.piA = True
             else:
                 self.piA = False
         elif topic == 'status/RaspberryPiC':
+            # Determine state of PiC and set final value of
+            # light status as appropriate
             if payload == 'online':
                 self.piC = True
+                self.lightStatus = self.brokerLightStatus
             else:
                 self.piC = False
+                self.lightStatus = False
         else:
             print("Topic:" + topic)
             print("Received:" + payload)
-
 
 if __name__ == "__main__":
 

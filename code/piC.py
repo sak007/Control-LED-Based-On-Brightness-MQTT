@@ -6,7 +6,7 @@ class PiCClient(Client):
         if str(msg.topic) == 'lightSensor':
             self.lightSensor = msg.payload.decode("utf-8")
         elif str(msg.topic) == 'threshold':
-            self.threshold = mdg.payload.decode("utf-8")
+            self.threshold = msg.payload.decode("utf-8")
         elif str(msg.topic) == 'lightStatus':
             self.oldLightStatus = str(msg.payload.decode("utf-8"))
         else:
@@ -42,7 +42,6 @@ if __name__ == "__main__":
     client.threshold = None
     client.lightStatus = None
     client.oldLightStatus = None
-
 
     while True:
         if client.lightSensor != None and client.threshold != None:
