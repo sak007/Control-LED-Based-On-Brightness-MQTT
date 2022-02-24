@@ -12,13 +12,12 @@ GPIO.setup(LIGHT_STATUS_PIN, GPIO.OUT)
 GPIO.setup(PI_A_PIN, GPIO.OUT)
 GPIO.setup(PI_C_PIN, GPIO.OUT)
 
-
-
 class PiBClient(Client):
 
     def on_message(self, client, userdata, msg):
         topic = str(msg.topic)
         payload = str(msg.payload.decode("utf-8"))
+
         if topic == 'lightStatus':
             # Store value of light status received from broker
             # but don't assign it to the final light status
@@ -34,17 +33,20 @@ class PiBClient(Client):
             else:
                 self.piA = False
         elif topic == 'status/RaspberryPiC':
-            # Determine state of PiC and set final value of
-            # light status as appropriate
             if payload == 'online':
                 self.piC = True
-                self.lightStatus = self.brokerLightStatus
             else:
                 self.piC = False
-                self.lightStatus = False
+
+        # Determine state of PiC and set final value of
+        # light status as appropriate
+        if self.piC == True:
+            self.lightStatus = self.brokerLightStatus
         else:
-            print("Topic:" + topic)
-            print("Received:" + payload)
+            self.lightStatus = False
+
+        print ("Received Topic: " + topic + ", Value: " + payload)
+        print("Updated Outputs:\n   PiA Online (" + str(self.piA) + ")\n   PiC Online (" + str(self.piC) + ")\n   Light Status On (" + str(self.lightStatus)+ ")")
 
 if __name__ == "__main__":
 
@@ -52,22 +54,33 @@ if __name__ == "__main__":
     properties = json.load(f)
     BROKER_ADDR = properties['BROKER_ADDR']
     BROKER_PORT = properties['BROKER_PORT']
+
     client = PiBClient(BROKER_ADDR, BROKER_PORT)
-    client.lightStatus = 0
-    client.piA = 0
-    client.piC = 0
     client.connect()
 
+    client.brokerLightStatus = False
+    client.lightStatus = False
+    client.piA = False
+    client.piC = False
 
     client.subscribe("lightStatus")
     client.subscribe("status/RaspberryPiA")
     client.subscribe("status/RaspberryPiC")
 
+    prevLightStatus = None
+    prevPiA = None
+    prevPiC = None
+
+    time.sleep(1)
+
     while True:
         try:
-            print(client.lightStatus, client.piA, client.piC)
-            GPIO.output(LIGHT_STATUS_PIN, client.lightStatus)
-            GPIO.output(PI_A_PIN, client.piA)
-            GPIO.output(PI_C_PIN, client.piC)
+            if prevLightStatus != client.lightStatus or prevPiA != client.piA or prevPiC != client.piC:
+                GPIO.output(LIGHT_STATUS_PIN, client.lightStatus)
+                GPIO.output(PI_A_PIN, client.piA)
+                GPIO.output(PI_C_PIN, client.piC)
         except KeyboardInterrupt:
+            print("Graceful Disconnect.")
+            client.disconnect()
             GPIO.cleanup()
+            quit()

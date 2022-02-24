@@ -27,6 +27,9 @@ class Client:
         print("Topic:" + str(msg.topic))
         print("Received:" + str(msg.payload))
 
+    def disconnect(self):
+        self.client.disconnect()
+
     def connect(self):
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
@@ -48,6 +51,7 @@ class Client:
         self.client.will_set(topic, payload='offline', qos=2, retain=True)
 
     def publish(self, topic, payload):
+        print ("Published Topic: " + topic + ", Value: " + payload)
         self.client.publish(topic, payload=payload, qos=2, retain=True)
 
     def subscribe(self, topic):
