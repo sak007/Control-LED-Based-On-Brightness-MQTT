@@ -2,6 +2,7 @@ from client import Client
 import time
 import RPi.GPIO as GPIO
 import json
+import PiStatus
 
 LIGHT_STATUS_PIN = 11
 PI_A_PIN = 13
@@ -55,31 +56,33 @@ if __name__ == "__main__":
     BROKER_ADDR = properties['BROKER_ADDR']
     BROKER_PORT = properties['BROKER_PORT']
 
-    client = PiBClient(BROKER_ADDR, BROKER_PORT)
-    client.connect()
+    try:
+        client = PiBClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiB')
+        client.connect()
 
-    client.brokerLightStatus = False
-    client.lightStatus = False
-    client.piA = False
-    client.piC = False
+        client.brokerLightStatus = False
+        client.lightStatus = False
+        client.piA = False
+        client.piC = False
 
-    client.subscribe("lightStatus")
-    client.subscribe("status/RaspberryPiA")
-    client.subscribe("status/RaspberryPiC")
+        client.subscribe("lightStatus")
+        client.subscribe("status/RaspberryPiA")
+        client.subscribe("status/RaspberryPiC")
 
-    prevLightStatus = None
-    prevPiA = None
-    prevPiC = None
+        prevLightStatus = None
+        prevPiA = None
+        prevPiC = None
 
-    time.sleep(1)
+        time.sleep(1)
 
-    while True:
-        try:
+        while True:
             if prevLightStatus != client.lightStatus or prevPiA != client.piA or prevPiC != client.piC:
                 GPIO.output(LIGHT_STATUS_PIN, client.lightStatus)
                 GPIO.output(PI_A_PIN, client.piA)
                 GPIO.output(PI_C_PIN, client.piC)
-        except KeyboardInterrupt:
+            PiStatus.setupWifiButton(client)
+            PiStatus.setupConnButton(client)                
+    except KeyboardInterrupt:
             print("Graceful Disconnect.")
             client.disconnect()
             GPIO.cleanup()

@@ -32,7 +32,7 @@ if __name__ == "__main__":
     BROKER_ADDR = properties['BROKER_ADDR']
     BROKER_PORT = properties['BROKER_PORT']
 
-    client = PiCClient(BROKER_ADDR, BROKER_PORT)
+    client = PiCClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiC')
     client.setStatusWill("status/RaspberryPiC")
     client.connect()
 
