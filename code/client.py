@@ -26,6 +26,7 @@ class Client:
     def on_disconnect(self, client, userdata, rc):
         self.status = False
         print("Disconnected with result code "+str(rc))
+        self.client.loop_stop()
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
         print("Subscribed with QOS: " + str(granted_qos[0]))
@@ -38,7 +39,6 @@ class Client:
 
     def disconnect(self):
         self.client.disconnect()
-        self.client.loop_stop()
 
     def connect(self):
         self.client.on_connect = self.on_connect

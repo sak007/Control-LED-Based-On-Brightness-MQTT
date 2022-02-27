@@ -45,6 +45,7 @@ if __name__ == "__main__":
     client.subscribe("lightSensor")
     client.subscribe("threshold")
 
+    # Give some time for any retained messages to show
     time.sleep(1)
 
     while True:

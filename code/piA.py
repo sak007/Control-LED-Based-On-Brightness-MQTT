@@ -51,6 +51,9 @@ if __name__ == "__main__":
         client.subscribe("lightSensor")
         client.subscribe("threshold")
 
+        # Give some time for any retained messages to show up
+        time.sleep(1)
+
         while True:
             # ls = input("Please enter a light sensor value [0,1]:\n")
             # updateLightSensor(client, ls, 0.01)

@@ -73,6 +73,7 @@ if __name__ == "__main__":
         prevPiA = None
         prevPiC = None
 
+        # Give some time for any retained messages to show up
         time.sleep(1)
 
         while True:
