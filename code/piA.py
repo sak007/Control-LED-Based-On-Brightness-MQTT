@@ -2,7 +2,7 @@ from client import Client
 import json
 import time
 import RPi.GPIO as GPIO
-import PiStatus
+#import PiStatus
 
 class PiAClient(Client):
     def on_message(self, client, userdata, msg):
@@ -43,31 +43,28 @@ if __name__ == "__main__":
     try:
         client = PiAClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiA')
         client.setStatusWill("status/RaspberryPiA")
+        client.setOnConnectMessage('status/RaspberryPiA', 'online')
+        client.setOnGracefulDisconnectMessage('status/RaspberryPiA', 'offline')
         client.connect()
         client.publishedLightSensor = None
         client.publishedThreshold = None
 
-        client.publish("status/RaspberryPiA", payload='online')
         client.subscribe("lightSensor")
         client.subscribe("threshold")
 
-        # Give some time for any retained messages to show up
-        time.sleep(1)
-
         while True:
-            # ls = input("Please enter a light sensor value [0,1]:\n")
-            # updateLightSensor(client, ls, 0.01)
-            # th = input("Please enter a threshold value [0,1]:\n")
-            # updateThreshold(client, th, 0.01)
+            ls = input("Please enter a light sensor value [0,1]:\n")
+            updateLightSensor(client, ls, 0.01)
+            th = input("Please enter a threshold value [0,1]:\n")
+            updateThreshold(client, th, 0.01)
             
-            PiStatus.setupWifiButton(client)
-            PiStatus.setupConnButton(client)
+            #PiStatus.setupWifiButton(client)
+            #PiStatus.setupConnButton(client)
             
             # light = getLightValue()
             # client.publish("lightSensor", payload='1')
             # client.publish("threshold", payload='1')
     except KeyboardInterrupt as e:
-        print("Graceful Disconnect.")
-        client.disconnect()
+        client.gracefulDisconnect()
         GPIO.cleanup()
         quit()           

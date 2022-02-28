@@ -34,13 +34,14 @@ if __name__ == "__main__":
 
     client = PiCClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiC')
     client.setStatusWill("status/RaspberryPiC")
+    client.setOnConnectMessage('status/RaspberryPiC', 'online')
+    client.setOnGracefulDisconnectMessage('status/RaspberryPiC', 'offline')
     client.connect()
 
     client.lightSensor = None
     client.threshold = None
     client.lightStatus = None
 
-    client.publish("status/RaspberryPiC", payload='online')
     client.subscribe("lightStatus")
     client.subscribe("lightSensor")
     client.subscribe("threshold")
@@ -52,6 +53,5 @@ if __name__ == "__main__":
         try:
             updateLightStatus(client)
         except KeyboardInterrupt:
-            print("Graceful Disconnect.")
-            client.disconnect()
+            client.gracefulDisconnect()
             quit()

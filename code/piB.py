@@ -2,7 +2,7 @@ from client import Client
 import time
 import RPi.GPIO as GPIO
 import json
-import PiStatus
+#import PiStatus
 
 LIGHT_STATUS_PIN = 11
 PI_A_PIN = 13
@@ -81,10 +81,9 @@ if __name__ == "__main__":
                 GPIO.output(LIGHT_STATUS_PIN, client.lightStatus)
                 GPIO.output(PI_A_PIN, client.piA)
                 GPIO.output(PI_C_PIN, client.piC)
-            PiStatus.setupWifiButton(client)
-            PiStatus.setupConnButton(client)                
+#            PiStatus.setupWifiButton(client)
+#            PiStatus.setupConnButton(client)                
     except KeyboardInterrupt:
-            print("Graceful Disconnect.")
-            client.disconnect()
+            client.gracefulDisconnect()
             GPIO.cleanup()
             quit()
