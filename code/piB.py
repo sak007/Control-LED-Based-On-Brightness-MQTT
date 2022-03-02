@@ -82,8 +82,8 @@ if __name__ == "__main__":
                 GPIO.output(PI_A_PIN, client.piA)
                 GPIO.output(PI_C_PIN, client.piC)
 #            PiStatus.setupWifiButton(client)
-#            PiStatus.setupConnButton(client)                
+#            PiStatus.setupConnButton(client)
     except KeyboardInterrupt:
-            client.gracefulDisconnect()
+            client.disconnect()
             GPIO.cleanup()
             quit()
