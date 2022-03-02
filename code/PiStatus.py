@@ -17,11 +17,10 @@ def setupWifiButton(client):
         print("WIFI Toggle")
         client.toggleWifi()
     GPIO.output(WIFI_LIGHT_PIN, client.wifiStatus)
-    
+
 
 def setupConnButton(client):
     if GPIO.input(CONN_PIN):
         print("Connection Toggle")
         client.toggleConnection()
-    GPIO.output(CONN_LIGHT_PIN, client.status)
-
+    GPIO.output(CONN_LIGHT_PIN, client.status and client.wifiStatus)
