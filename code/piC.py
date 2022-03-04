@@ -1,6 +1,7 @@
 from client import Client
 import json
 import time
+import PiStatus
 
 class PiCClient(Client):
     def on_message(self, client, userdata, msg):
@@ -52,6 +53,9 @@ if __name__ == "__main__":
     while True:
         try:
             updateLightStatus(client)
+            PiStatus.setupCrashButton(client)
+            PiStatus.setupConnButton(client)
         except KeyboardInterrupt:
             client.disconnect()
+            GPIO.cleanup()
             quit()

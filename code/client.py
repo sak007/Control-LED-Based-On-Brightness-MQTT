@@ -73,8 +73,13 @@ class Client:
         self.client.loop_stop()
 
     def forceLastWillDisconnect(self):
-        # Do something different here if we don't really want to terminate the script
-        quit()
+        self.crash()
+
+    def crash(self):
+        try:
+            self.crash()
+        except:
+            self.crash()
 
     def connect(self):
         self.client.on_connect = self.on_connect
