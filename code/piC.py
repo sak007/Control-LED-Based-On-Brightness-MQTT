@@ -5,7 +5,7 @@ import time
 class PiCClient(Client):
     def on_message(self, client, userdata, msg):
         topic = str(msg.topic)
-        payload = str(msg.payload.decode("utf-8"))  
+        payload = str(msg.payload.decode("utf-8"))
 
         if topic == 'lightSensor':
             self.lightSensor = float(payload)
@@ -18,10 +18,10 @@ class PiCClient(Client):
 
 def updateLightStatus(client):
     if client.lightSensor != None and client.threshold != None:
-        if (client.lightSensor >= client.threshold) and client.lightStatus != 'TurnOn':
+        if (client.lightSensor < client.threshold) and client.lightStatus != 'TurnOn':
             client.lightStatus = 'TurnOn'
             client.publish("lightStatus", payload=client.lightStatus)
-        elif (client.lightSensor < client.threshold) and client.lightStatus != 'TurnOff':
+        elif (client.lightSensor >= client.threshold) and client.lightStatus != 'TurnOff':
             client.lightStatus = 'TurnOff'
             client.publish("lightStatus", payload=client.lightStatus)
 
@@ -53,5 +53,5 @@ if __name__ == "__main__":
         try:
             updateLightStatus(client)
         except KeyboardInterrupt:
-            client.gracefulDisconnect()
+            client.disconnect()
             quit()

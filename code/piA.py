@@ -2,7 +2,8 @@ from client import Client
 import json
 import time
 import RPi.GPIO as GPIO
-#import PiStatus
+import PiStatus
+from adc import ADC
 
 class PiAClient(Client):
     def on_message(self, client, userdata, msg):
@@ -39,7 +40,7 @@ if __name__ == "__main__":
     properties = json.load(f)
     BROKER_ADDR = properties['BROKER_ADDR']
     BROKER_PORT = properties['BROKER_PORT']
-
+    adc = ADC()
     try:
         client = PiAClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiA')
         client.setStatusWill("status/RaspberryPiA")
@@ -53,18 +54,18 @@ if __name__ == "__main__":
         client.subscribe("threshold")
 
         while True:
-            ls = input("Please enter a light sensor value [0,1]:\n")
-            updateLightSensor(client, ls, 0.01)
-            th = input("Please enter a threshold value [0,1]:\n")
-            updateThreshold(client, th, 0.01)
-            
-            #PiStatus.setupWifiButton(client)
-            #PiStatus.setupConnButton(client)
-            
+            ls = adc.read(0)
+            updateLightSensor(client, ls, 100)
+            th = adc.read(1)
+            updateThreshold(client, th, 100)
+
+            PiStatus.setupWifiButton(client)
+            PiStatus.setupConnButton(client)
+
             # light = getLightValue()
             # client.publish("lightSensor", payload='1')
             # client.publish("threshold", payload='1')
     except KeyboardInterrupt as e:
-        client.gracefulDisconnect()
+        client.disconnect()
         GPIO.cleanup()
-        quit()           
+        quit()

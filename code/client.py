@@ -32,7 +32,6 @@ class Client:
     def on_disconnect(self, client, userdata, rc):
         self.status = False
         print("Disconnected with result code "+str(rc))
-        self.client.loop_stop()
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
         print("Subscribed with QOS: " + str(granted_qos[0]))
@@ -47,10 +46,10 @@ class Client:
         if self.publish_in_proc > 0:
             self.publish_in_proc -= 1
 
-    def disconnect(self):
+    def disconnect1(self):
         self.client.disconnect()
 
-    def gracefulDisconnect(self):
+    def disconnect(self):
         # If a disconnect message has been set, publish it
         if self.on_disconnect_topic != None and self.on_disconnect_payload != None:
             self.publish(self.on_disconnect_topic, self.on_disconnect_payload)
@@ -70,7 +69,8 @@ class Client:
                     break
             if self.publish_in_proc == 0:
                 print("All in process publishes completed successfully.")
-        self.disconnect()
+        self.client.disconnect()
+        self.client.loop_stop()
 
     def forceLastWillDisconnect(self):
         # Do something different here if we don't really want to terminate the script
@@ -83,7 +83,7 @@ class Client:
         self.client.on_disconnect = self.on_disconnect
         self.client.on_publish = self.on_publish
         self.publish_in_proc = 0
-        
+
         try:
             self.client.is_connected_flag = False
             self.client.connect(self.bkr_addr, self.bkr_port)
@@ -117,7 +117,7 @@ class Client:
         self.client.subscribe(topic, 2)
         while not self.client.is_subscribed_flag:
             continue
-        
+
     def getWifiStatus(self):
         self.wifiStatus = 1 if (os.system('iwgetid > /dev/null') == 0) else 0
         return self.wifiStatus
@@ -129,20 +129,20 @@ class Client:
         os.system(cmd)
         while(option != self.getWifiStatus()):
             continue
-        
+
     def getStatus(self):
         return 1 if self.status else 0
-        
+
     def toggleConnection(self):
         s = self.status
         if self.status:
             self.disconnect()
         else:
             self.connect()
-        time.sleep(1)        
+        time.sleep(1)
         while s == self.status:
             continue
-        
+
 if __name__ == "__main__":
 
     client = Client('localhost', 1883)
