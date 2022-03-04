@@ -2,8 +2,6 @@ from client import Client
 import time
 import RPi.GPIO as GPIO
 import json
-import mygpio
-import wifi
 
 LIGHT_STATUS_PIN = 11
 PI_A_PIN = 13
@@ -68,17 +66,9 @@ if __name__ == "__main__":
     BROKER_ADDR = properties['BROKER_ADDR']
     BROKER_PORT = properties['BROKER_PORT']
 
-    # Setup GPIO
-    mygpio.setup()
-    wifiBtn = mygpio.Button(mygpio.WIFI_PIN)
-    connBtn = mygpio.Button(mygpio.CONN_PIN)
-
     try:
         client = PiBClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiB')
         client.mysetup()
-
-        mygpio.turnOn(mygpio.CONN_LIGHT_PIN) # Optional Conn LED
-        mygpio.turnOn(mygpio.WIFI_LIGHT_PIN) # Optional Wifi LED
 
         prevLightStatus = None
         prevPiA = None
@@ -92,34 +82,6 @@ if __name__ == "__main__":
                 GPIO.output(LIGHT_STATUS_PIN, client.lightStatus)
                 GPIO.output(PI_A_PIN, client.piA)
                 GPIO.output(PI_C_PIN, client.piC)
-
-
-            # Check if the button was pressed
-            if wifiBtn.checkState() == mygpio.BTN_PRESS:
-                if wifi.isWifiEnabled(): # Disable Wifi
-                    wifi.disableWifi()
-                    mygpio.turnOff(mygpio.WIFI_LIGHT_PIN) # Optional Wifi LED
-                    mygpio.turnOff(mygpio.CONN_LIGHT_PIN) # Optional Conn LED
-                    clientRunning = False
-                else: # Enable Wifi
-                    wifi.enableWifi() 
-                    mygpio.turnOn(mygpio.WIFI_LIGHT_PIN) # Optional Wifi LED    
-                    if client.isConnected(): # Was the client connected before Wifi was shutdown
-                        mygpio.turnOn(mygpio.CONN_LIGHT_PIN) # Optional Wifi LED
-                        clientRunning = True      
-
-            # If wifi is enabled, check the state of the conn button
-            if wifi.isWifiEnabled():
-                # Check if the conn button was pressed
-                if connBtn.checkState() == mygpio.BTN_PRESS:
-                    if client.isConnected(): # Disconnect
-                        client.disconnect()
-                        mygpio.turnOff(mygpio.CONN_LIGHT_PIN) # Optional Conn LED
-                        clientRunning = False
-                    else: # Connect
-                        client.connect()
-                        mygpio.turnOn(mygpio.CONN_LIGHT_PIN) # Optional Conn LED
-                        clientRunning = True
 
             time.sleep(.005) # Needed to catch the Keyboard Interrupt
 
