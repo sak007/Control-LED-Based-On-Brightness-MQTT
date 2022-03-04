@@ -23,11 +23,15 @@ class ADC:
 
 # Reads from the LDR channel and scales it from 0-1
 def readLDR(adc):
-    return (adc.read(LDR_CHANNEL) - LDR_MIN) / (LDR_MAX - LDR_MIN)
+    # It is possible that we exceed the previous calibrated max, so force reading down to max cal value
+    raw = min(adc.read(LDR_CHANNEL), LDR_MAX)
+    return (raw - LDR_MIN) / (LDR_MAX - LDR_MIN)
 
 # Reads from the POT channel and scales it from 0-1
 def readPOT(adc):
-    return (adc.read(POT_CHANNEL) - POT_MIN) / (POT_MAX - POT_MIN)
+    # It is possible that we exceed the previous calibrated max, so force reading down to max cal value
+    raw = min(adc.read(POT_CHANNEL), POT_MAX) 
+    return (raw - POT_MIN) / (POT_MAX - POT_MIN)
 
 ####################### Test Functions Below #######################
 
