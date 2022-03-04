@@ -96,32 +96,11 @@ def main():
                     client.updateLightSensor(ls, PERCENT_DELTA)
                     client.updateThreshold(th, PERCENT_DELTA)
 
-            # Check if the button was pressed
-            if wifiBtn.checkState() == mygpio.BTN_PRESS:
-                if wifi.isWifiEnabled(): # Disable Wifi
-                    wifi.disableWifi()
-                    mygpio.turnOff(mygpio.WIFI_LIGHT_PIN) # Optional Wifi LED
-                    mygpio.turnOff(mygpio.CONN_LIGHT_PIN) # Optional Conn LED
-                    clientRunning = False
-                else: # Enable Wifi
-                    wifi.enableWifi() 
-                    mygpio.turnOn(mygpio.WIFI_LIGHT_PIN) # Optional Wifi LED    
-                    if client.isConnected(): # Was the client connected before Wifi was shutdown
-                        mygpio.turnOn(mygpio.CONN_LIGHT_PIN) # Optional Wifi LED
-                        clientRunning = True      
+            # Handle Wifi button
+            clientRunning = mygpio.handleWifiButton(wifiBtn, client, clientRunning)
+            # Handle Conn button
+            clientRunning = mygpio.handleConnBtn(connBtn, client, clientRunning)
 
-            # If wifi is enabled, check the state of the conn button
-            if wifi.isWifiEnabled():
-                # Check if the conn button was pressed
-                if connBtn.checkState() == mygpio.BTN_PRESS:
-                    if client.isConnected(): # Disconnect
-                        client.disconnect()
-                        mygpio.turnOff(mygpio.CONN_LIGHT_PIN) # Optional Conn LED
-                        clientRunning = False
-                    else: # Connect
-                        client.connect()
-                        mygpio.turnOn(mygpio.CONN_LIGHT_PIN) # Optional Conn LED
-                        clientRunning = True
             time.sleep(.005) # Needed to catch the Keyboard Interrupt
         
     except KeyboardInterrupt as e:

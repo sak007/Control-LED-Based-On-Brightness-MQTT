@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import os
 import time
+import wifi
 
 CONN_PIN = 37
 WIFI_PIN = 35
@@ -49,6 +50,39 @@ def turnOn(pin):
     GPIO.output(pin, GPIO.HIGH)
 def turnOff(pin):
     GPIO.output(pin, GPIO.LOW)
+
+def handleWifiButton(wifiBtn, client, lastState):
+    # Check if the button was pressed
+    if wifiBtn.checkState() == BTN_PRESS:
+        if wifi.isWifiEnabled(): # Disable Wifi
+            wifi.disableWifi()
+            turnOff(WIFI_LIGHT_PIN) # Optional Wifi LED
+            turnOff(CONN_LIGHT_PIN) # Optional Conn LED
+            return False
+        else: # Enable Wifi
+            wifi.enableWifi() 
+            turnOn(WIFI_LIGHT_PIN) # Optional Wifi LED    
+            if client.isConnected(): # Was the client connected before Wifi was shutdown
+                turnOn(CONN_LIGHT_PIN) # Optional Wifi LED
+                return True
+    return lastState # no change
+
+def handleConnBtn(connBtn, client, lastState):
+    # If wifi is enabled, check the state of the conn button
+    if wifi.isWifiEnabled():
+        # Check if the conn button was pressed
+        if connBtn.checkState() == BTN_PRESS:
+            if client.isConnected(): # Disconnect
+                client.disconnect()
+                turnOff(CONN_LIGHT_PIN) # Optional Conn LED
+                clientRunning = False
+                return False
+            else: # Connect
+                client.connect()
+                turnOn(CONN_LIGHT_PIN) # Optional Conn LED
+                clientRunning = True
+                return True
+    return lastState # no change
 
 ####################### Test Functions Below #######################
 
