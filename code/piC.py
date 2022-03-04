@@ -72,7 +72,7 @@ if __name__ == "__main__":
             # Handle Conn button
             clientRunning = mygpio.handleConnBtn(connBtn, client, clientRunning)
 
-                time.sleep(.005) # Needed to catch the Keyboard Interrupt
+            time.sleep(.005) # Needed to catch the Keyboard Interrupt
     except KeyboardInterrupt:
         GPIO.cleanup()
         client.disconnect()
