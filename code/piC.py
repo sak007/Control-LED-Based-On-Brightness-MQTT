@@ -52,6 +52,7 @@ if __name__ == "__main__":
     while True:
         try:
             updateLightStatus(client)
+            time.sleep(.005) # Needed to catch the Keyboard Interrupt
         except KeyboardInterrupt:
             client.disconnect()
             quit()

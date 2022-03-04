@@ -17,11 +17,8 @@ class Client:
             self.client = mqtt.Client()
         else:
             self.client = mqtt.Client(client_id = client_id,clean_session=False)
-        self.status = False
-        self.wifiStatus = self.getWifiStatus()
 
     def on_connect(self, client, userdata, flags, rc):
-        self.status = True
         print("Connected with result code "+str(rc))
         self.client.is_connected_flag = True
 
@@ -30,8 +27,12 @@ class Client:
             self.publish(self.on_connect_topic, self.on_connect_payload)
 
     def on_disconnect(self, client, userdata, rc):
-        self.status = False
+        self.client.is_connected_flag = False
         print("Disconnected with result code "+str(rc))
+
+    # Returns the last known connection state
+    def isConnected(self):
+        return self.client.is_connected_flag
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
         print("Subscribed with QOS: " + str(granted_qos[0]))
@@ -118,31 +119,6 @@ class Client:
         while not self.client.is_subscribed_flag:
             continue
 
-    def getWifiStatus(self):
-        self.wifiStatus = 1 if (os.system('iwgetid > /dev/null') == 0) else 0
-        return self.wifiStatus
-
-    def toggleWifi(self):
-        option = not self.wifiStatus
-        state = 'up' if option else 'down'
-        cmd = 'sudo ifconfig wlan0 ' + state
-        os.system(cmd)
-        while(option != self.getWifiStatus()):
-            continue
-
-    def getStatus(self):
-        return 1 if self.status else 0
-
-    def toggleConnection(self):
-        s = self.status
-        if self.status:
-            self.disconnect()
-        else:
-            self.connect()
-        time.sleep(1)
-        while s == self.status:
-            continue
-
 if __name__ == "__main__":
 
     client = Client('localhost', 1883)
@@ -156,3 +132,4 @@ if __name__ == "__main__":
     while True:
         # light = getLightValue()
         client.publish("lightSensor", payload='1')
+        time.sleep(1)
