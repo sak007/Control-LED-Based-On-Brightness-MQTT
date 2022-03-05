@@ -67,6 +67,8 @@ if __name__ == "__main__":
         while True:
             
             client.updateLightStatus()
+            # Handle clientConnection Discrepencies
+            clientRunning = mygpio.handleConnDiscrepencies(client, clientRunning)
             # Handle Wifi button
             clientRunning = mygpio.handleWifiButton(wifiBtn, client, clientRunning)
             # Handle Conn button

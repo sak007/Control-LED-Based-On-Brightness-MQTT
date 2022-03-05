@@ -96,10 +96,13 @@ def main():
                     client.updateLightSensor(ls, PERCENT_DELTA)
                     client.updateThreshold(th, PERCENT_DELTA)
 
+            # Handle clientConnection Discrepencies
+            clientRunning = mygpio.handleConnDiscrepencies(client, clientRunning)
             # Handle Wifi button
             clientRunning = mygpio.handleWifiButton(wifiBtn, client, clientRunning)
             # Handle Conn button
             clientRunning = mygpio.handleConnBtn(connBtn, client, clientRunning)
+
 
             time.sleep(.005) # Needed to catch the Keyboard Interrupt
         

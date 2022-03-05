@@ -84,6 +84,22 @@ def handleConnBtn(connBtn, client, lastState):
                 return True
     return lastState # no change
 
+# Upon reconnecting wifi, sometimes the client will also reconnect, but seconds
+# later, this will catch that and adjust the state and fix the light
+# Also detects if mqtt connection drops in cases other than intentionall
+# button presses
+def handleConnDiscrepencies(client, lastState):
+    # Fires after delayed mqtt client reconnection after wifi reconnects
+    if lastState == False and wifi.isWifiEnabled() and client.isConnected():
+        turnOn(CONN_LIGHT_PIN) # Optional Conn LED
+        return True
+    # Might fire in the case of broker disconnect?
+    elif lastState == True and not client.isConnected():
+        turnOff(CONN_LIGHT_PIN) # Optional Conn LED
+        return False
+    else:
+        return lastState
+
 ####################### Test Functions Below #######################
 
 # def setupWifiButton(client):
