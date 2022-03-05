@@ -12,7 +12,7 @@ class LoggerClient(Client):
         
         else:
             f = open("logs.csv", "w")
-            f.write('Timestamp, Topic, Payload')
+            f.write('Timestamp, Topic, Payload \n')
         
         f.write(str(datetime.datetime.now()) + "," + str(msg.topic) + "," + str(msg.payload.decode("utf-8")) + "\n")
         print("Topic:" + str(msg.topic))
