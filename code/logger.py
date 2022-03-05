@@ -1,10 +1,23 @@
 from client import Client
 import json
+import os
+import datetime
+from os.path import exists as file_exists
 
 class LoggerClient(Client):
     def on_message(self, client, userdata, msg):
+        check_if_exists = file_exists('logs.csv' )
+        if(check_if_exists):
+            f = open("logs.csv", "a")
+        
+        else:
+            f = open("logs.csv", "w")
+            f.write('Timestamp, Topic, Payload')
+        
+        f.write(str(datetime.datetime.now()) + "," + str(msg.topic) + "," + str(msg.payload.decode("utf-8")) + "\n")
         print("Topic:" + str(msg.topic))
         print("Received:" + str(msg.payload.decode("utf-8")))
+        f.close()
 
 if __name__ == "__main__":
     f = open('../properties.json')
