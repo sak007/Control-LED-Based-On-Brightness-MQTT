@@ -23,37 +23,51 @@ class PiAClient(Client):
         self.subscribe("lightSensor")
         self.subscribe("threshold")
 
+        self.w84L = False # wait for light subscribe msg 
+        self.w84T = False # wait for threshold subscribe msg
+
+        time.sleep(1)
+
     def on_message(self, client, userdata, msg):
         topic = str(msg.topic)
         payload = str(msg.payload.decode("utf-8"))
 
         if topic == 'lightSensor':
             self.publishedLightSensor = payload
+            self.w84L = False
         elif topic == 'threshold':
             self.publishedThreshold = payload
+            self.w84T = False 
 
         print("Received Topic: " + topic + ", Value: " + payload)
 
 
     def updateLightSensor(self, newValue, deltaThreshold):
-        # First Reading/Publish ?
-        if self.publishedLightSensor == None:
-            self.publish("lightSensor", payload=str(newValue))
-            self.publishedLightSensor = newValue
-        # Is % diff of old and new value > the deltaThreshold %
-        elif abs(newValue - float(self.publishedLightSensor)) > deltaThreshold:
-            self.publish("lightSensor", payload=str(newValue))
-            self.publishedLightSensor = newValue
-
+        if not self.w84L:
+            # First Reading/Publish ?
+            if self.publishedLightSensor == None:
+                #self.publishedLightSensor = newValue
+                self.publish("lightSensor", payload=str(newValue))
+                self.w84L = True
+            # Is % diff of old and new value > the deltaThreshold %
+            elif abs(newValue - float(self.publishedLightSensor)) > deltaThreshold:
+                #self.publishedLightSensor = newValue
+                self.publish("lightSensor", payload=str(newValue))
+                self.w84L = True
+            
     def updateThreshold(self, newValue, deltaThreshold):
-        # First Reading/Publish ?
-        if self.publishedThreshold == None:
-            self.publish("threshold", payload=str(newValue))
-            self.publishedThreshold = newValue
-        # Is % diff of old and new value > the deltaThreshold % ?
-        elif abs(newValue - float(self.publishedThreshold)) > deltaThreshold:
-            self.publish("threshold", payload=str(newValue))
-            self.publishedThreshold = newValue
+        if not self.w84T:
+            # First Reading/Publish ?
+            if self.publishedThreshold == None:
+                #self.publishedThreshold = newValue
+                self.publish("threshold", payload=str(newValue))
+                self.w84T = True
+            # Is % diff of old and new value > the deltaThreshold % ?
+            elif abs(newValue - float(self.publishedThreshold)) > deltaThreshold:
+                #self.publishedThreshold = newValue
+                self.publish("threshold", payload=str(newValue))
+                self.w84T = True
+            
 
 # Sets up ADC, buttons, optional LEDs, and MQTT client
 # In a loop, reads from ADC every .1 s, if the client is running, then
