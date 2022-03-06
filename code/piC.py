@@ -21,6 +21,8 @@ class PiCClient(Client):
         client.subscribe("lightSensor")
         client.subscribe("threshold")
 
+        time.sleep(1)
+
     def on_message(self, client, userdata, msg):
         topic = str(msg.topic)
         payload = str(msg.payload.decode("utf-8"))
@@ -36,10 +38,10 @@ class PiCClient(Client):
 
     def updateLightStatus(self):
         if self.lightSensor != None and self.threshold != None:
-            if (self.lightSensor < self.threshold) and self.lightStatus != 'TurnOn':
+            if (self.lightSensor > self.threshold) and self.lightStatus != 'TurnOn':
                 self.lightStatus = 'TurnOn'
                 self.publish("lightStatus", payload=self.lightStatus)
-            elif (self.lightSensor >= self.threshold) and self.lightStatus != 'TurnOff':
+            elif (self.lightSensor <= self.threshold) and self.lightStatus != 'TurnOff':
                 self.lightStatus = 'TurnOff'
                 self.publish("lightStatus", payload=self.lightStatus)
 
