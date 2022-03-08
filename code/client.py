@@ -87,7 +87,7 @@ class Client:
 
         try:
             self.client.is_connected_flag = False
-            self.client.connect(self.bkr_addr, self.bkr_port)
+            self.client.connect(self.bkr_addr, self.bkr_port, keepalive=5)
             self.client.loop_start()
             while not self.client.is_connected_flag:
                 continue
