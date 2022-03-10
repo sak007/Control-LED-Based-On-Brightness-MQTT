@@ -82,6 +82,9 @@ def main():
     properties = json.load(f)
     BROKER_ADDR = properties['BROKER_ADDR']
     BROKER_PORT = properties['BROKER_PORT']
+    BROKER_USERNAME = properties['BROKER_USERNAME']
+    BROKER_PASSWORD = properties['BROKER_PASSWORD']
+
     # Connect ADC
     myadc = ADC()
     # Setup GPIO
@@ -90,7 +93,7 @@ def main():
     connBtn = mygpio.Button(mygpio.CONN_PIN)
     try:
         # Setup MQTT Client
-        client = PiAClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiA')
+        client = PiAClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiA', BROKER_USERNAME, BROKER_PASSWORD)
         client.mysetup()
         clientRunning = True # Protects client from publishing when it doesnt have a connection
         mygpio.turnOn(mygpio.CONN_LIGHT_PIN) # Optional Conn LED

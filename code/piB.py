@@ -65,9 +65,11 @@ if __name__ == "__main__":
     properties = json.load(f)
     BROKER_ADDR = properties['BROKER_ADDR']
     BROKER_PORT = properties['BROKER_PORT']
+    BROKER_USERNAME = properties['BROKER_USERNAME']
+    BROKER_PASSWORD = properties['BROKER_PASSWORD']
 
     try:
-        client = PiBClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiB')
+        client = PiBClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiB', BROKER_USERNAME, BROKER_PASSWORD)
         client.mysetup()
 
         prevLightStatus = None

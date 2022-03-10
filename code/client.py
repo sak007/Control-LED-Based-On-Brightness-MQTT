@@ -4,7 +4,7 @@ import time
 
 class Client:
 
-    def __init__(self, bkr_addr, bkr_port, client_id=None):
+    def __init__(self, bkr_addr, bkr_port, client_id=None, broker_username=None, broker_password=None):
         self.bkr_addr = bkr_addr
         self.bkr_port = bkr_port
         self.on_connect_topic = None
@@ -17,6 +17,8 @@ class Client:
             self.client = mqtt.Client()
         else:
             self.client = mqtt.Client(client_id = client_id,clean_session=False)
+
+        self.client.username_pw_set(username=broker_username,password=broker_password)
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code "+str(rc))
