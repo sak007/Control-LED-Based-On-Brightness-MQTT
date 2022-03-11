@@ -18,7 +18,8 @@ class Client:
         else:
             self.client = mqtt.Client(client_id = client_id,clean_session=False)
 
-        self.client.username_pw_set(username=broker_username,password=broker_password)
+        if broker_username != None and broker_password != None:
+            self.client.username_pw_set(username=broker_username,password=broker_password)
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code "+str(rc))
