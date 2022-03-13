@@ -18,7 +18,6 @@
   - [TODO]
   
 ### RaspberryPiA
-  - [TODO]
 
 ### RaspberryPiB
   - [TODO]
@@ -40,13 +39,16 @@
 
 ### RaspberryPiA
  - Connect LDR, Potentiometer and ADC to RaspberryPi as per the following circuit diagram.
- - [TODO]
- - Checkout the repo in RaspberryPiA
- - From repo home run,
- [use 'python3' if python points to python2]
- ```
- python code/piA.py
- ```
+ - Test all subfunctions:
+   - Confirm ADC is functioning via `python3 code/adc.py`
+     - `testRawRead()` to test raw readings for the LDR and POT
+     - `minMaxReader(channel)` to find min and max ADC vals for connected channels for scaling and set the scale vals
+     - `testScaledRead()` to test scaled ADC readings
+   - Confirm wifi and connection buttons are functioning via `python3 code/mygpio.py`
+     - set button in `main()`
+   - Confirm wifi can be enabled/disabled via `python3 code/wifi.py`
+   - Confirm MQTT client works via `python3 client.py`
+ - Run piA code via `python3 piA.py`
  
  ### RaspberryPiC
  - Checkout the repo in RaspberryPiC
