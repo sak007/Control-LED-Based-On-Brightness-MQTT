@@ -1,5 +1,5 @@
 {
-  "BROKER_ADDR": "localhost,
+  "BROKER_ADDR": "localhost",
   "BROKER_PORT": 1883,
   "BROKER_USERNAME": "group16",
   "BROKER_PASSWORD": "3fp9q8#"
