@@ -40,6 +40,7 @@ if __name__ == "__main__":
     BROKER_USERNAME = properties['BROKER_USERNAME']
     BROKER_PASSWORD = properties['BROKER_PASSWORD']
     client = LoggerClient(BROKER_ADDR, BROKER_PORT, 'Logger', BROKER_USERNAME, BROKER_PASSWORD)
+    client = LoggerClient(BROKER_ADDR, BROKER_PORT, 'Logger', BROKER_USERNAME, BROKER_PASSWORD)
     # client.on_message = on_message
     client.connect()
 

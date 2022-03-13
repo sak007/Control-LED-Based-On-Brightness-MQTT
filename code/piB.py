@@ -2,7 +2,6 @@ from client import Client
 import time
 import RPi.GPIO as GPIO
 import json
-#import PiStatus
 
 LIGHT_STATUS_PIN = 11
 PI_A_PIN = 13
@@ -14,6 +13,17 @@ GPIO.setup(PI_A_PIN, GPIO.OUT)
 GPIO.setup(PI_C_PIN, GPIO.OUT)
 
 class PiBClient(Client):
+    def mysetup(self):
+        client.connect()
+
+        client.brokerLightStatus = False
+        client.lightStatus = False
+        client.piA = False
+        client.piC = False
+
+        client.subscribe("lightStatus")
+        client.subscribe("status/RaspberryPiA")
+        client.subscribe("status/RaspberryPiC")
 
     def on_message(self, client, userdata, msg):
         topic = str(msg.topic)
@@ -55,19 +65,12 @@ if __name__ == "__main__":
     properties = json.load(f)
     BROKER_ADDR = properties['BROKER_ADDR']
     BROKER_PORT = properties['BROKER_PORT']
+    BROKER_USERNAME = properties['BROKER_USERNAME']
+    BROKER_PASSWORD = properties['BROKER_PASSWORD']
 
     try:
-        client = PiBClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiB')
-        client.connect()
-
-        client.brokerLightStatus = False
-        client.lightStatus = False
-        client.piA = False
-        client.piC = False
-
-        client.subscribe("lightStatus")
-        client.subscribe("status/RaspberryPiA")
-        client.subscribe("status/RaspberryPiC")
+        client = PiBClient(BROKER_ADDR, BROKER_PORT, 'RaspberryPiB', BROKER_USERNAME, BROKER_PASSWORD)
+        client.mysetup()
 
         prevLightStatus = None
         prevPiA = None
@@ -81,9 +84,10 @@ if __name__ == "__main__":
                 GPIO.output(LIGHT_STATUS_PIN, client.lightStatus)
                 GPIO.output(PI_A_PIN, client.piA)
                 GPIO.output(PI_C_PIN, client.piC)
-#            PiStatus.setupWifiButton(client)
-#            PiStatus.setupConnButton(client)
+
+            time.sleep(.005) # Needed to catch the Keyboard Interrupt
+
     except KeyboardInterrupt:
-            client.disconnect()
-            GPIO.cleanup()
-            quit()
+        GPIO.cleanup()
+        client.disconnect()    
+        quit()
