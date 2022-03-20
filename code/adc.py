@@ -5,7 +5,7 @@ LDR_CHANNEL = 0
 POT_CHANNEL = 7
 
 LDR_MIN = 2 # Lowest ADC reading seen (High light level)
-LDR_MAX = 1024 # Highest ADC reading seen (Lowest light level)
+LDR_MAX = 1023 # Highest ADC reading seen (Lowest light level)
 
 POT_MIN = 0 # Turned CCW all the way
 POT_MAX = 546 # Turned CW all the way
