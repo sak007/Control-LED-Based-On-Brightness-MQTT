@@ -14,18 +14,20 @@ class LoggerClient(Client):
             f = open("logs.csv", "w")
             f.write('Timestamp, Topic, Payload \n')
         
-        check_if_new_exists = file_exists('logs1.csv' )
+        check_if_new_exists = file_exists('lightStatus.csv' )
         if(check_if_new_exists):
-            f1 = open("logs1.csv", "a")
+            f1 = open("lightStatus.csv", "a")
 
         else:
-            f1 = open("logs1.csv", "w")
+            f1 = open("lightStatus.csv", "w")
             f1.write('Timestamp, Topic, Payload \n')
-
+        
+        savedate = str(datetime.datetime.now());
         if(str(msg.topic) == 'lightStatus'):
-            f1.write(str(datetime.datetime.now()) + "," + str(msg.topic) + "," + str(msg.payload.decode("utf-8")) + "\n")
-       
-        f.write(str(datetime.datetime.now()) + "," + str(msg.topic) + "," + str(msg.payload.decode("utf-8")) + "\n")
+            f1.write(str(savedate) + "," + str(msg.topic) + "," + str(msg.payload.decode("utf-8")) + "\n")
+            
+ 
+        f.write(str(savedate) + "," + str(msg.topic) + "," + str(msg.payload.decode("utf-8")) + "\n")
             
         print("Topic:" + str(msg.topic))
         print("Received:" + str(msg.payload.decode("utf-8")))
