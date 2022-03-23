@@ -14,7 +14,7 @@
 
  - From the code/ folder, run logger software via `python3 logger.py`
  - The full log file with all required results will be written to: logs.csv
- - A log file showing only lightStatus changes will be written to: logs1.csv
+ - A log file showing only lightStatus changes will be written to: lightStatus.csv
 
 ### RaspberryPiA
 
