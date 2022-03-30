@@ -1,4 +1,4 @@
-# IOT_HW3
+# Control LED Based on Brightness Using MQTT Protocol
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![version](https://img.shields.io/badge/version-3.0-blue)](https://github.com/sak007/Control-LED-Based-On-Brightness-MQTT/releases/tag/v3.0)
